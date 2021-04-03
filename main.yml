@@ -1,0 +1,33 @@
+---
+- name: create partition
+  hosts: Test
+  remote_user: root
+  become: yes
+
+  tasks:
+  - name: Create a new ext4 primary partition
+    parted:
+      device: /dev/sdb
+      number: 1
+      state: present
+      part_start: 2MiB
+      part_end: 100GiB
+      
+  - name: Format the Disk
+    filesystem:
+      fstype: ext4
+      dev: /dev/sdb1
+      
+  - name: create the Directory
+    file:
+      path: /mnt/storage
+      state: directory
+      mode: '0755'
+      
+  - name: Mount Prtition
+    mount:
+      path: /mnt/storage
+      src:  /dev/sdb1
+      fstype: ext4
+      state: mounted
+     
